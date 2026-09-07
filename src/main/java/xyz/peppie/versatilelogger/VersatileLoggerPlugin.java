@@ -262,7 +262,7 @@ public class VersatileLoggerPlugin extends Plugin
 
 	private void logMessage(MessageNode node, ChatCategory category, ChatMessageType type, CategorySettings settings, boolean edited)
 	{
-		String line = messageFormatter.buildLine(node, settings.getInclude(), settings.isDetailedTimestamp());
+		String line = messageFormatter.buildLine(node, type, activeAccountName, settings.getInclude(), settings.isDetailedTimestamp());
 
 		if (settings.isLocalEnabled())
 		{
@@ -287,7 +287,7 @@ public class VersatileLoggerPlugin extends Plugin
 		if (settings.getEffectiveFormatMode() == FormatMode.FULL)
 		{
 			MessageDto messageDto = clanContextResolver.buildMessage(node, edited);
-			UserDto userDto = clanContextResolver.buildUser(node);
+			UserDto userDto = clanContextResolver.buildUser(node, type);
 			ClanChatDto clanChatDto = clanContextResolver.buildClanChat(type);
 			FriendsChatDto friendsChatDto = clanContextResolver.buildFriendsChat(type);
 			FullMessagePayload payload = new FullMessagePayload(messageDto, userDto, clanChatDto, friendsChatDto);

@@ -7,6 +7,7 @@ import net.runelite.api.Client;
 import net.runelite.api.FriendsChatManager;
 import net.runelite.api.FriendsChatMember;
 import net.runelite.api.MessageNode;
+import net.runelite.api.Player;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanChannelMember;
 import net.runelite.api.clan.ClanRank;
@@ -38,13 +39,31 @@ public class ClanContextResolver
 			MessageFormatter.resolvedValue(node), edited);
 	}
 
-	public UserDto buildUser(MessageNode node)
+	public UserDto buildUser(MessageNode node, ChatMessageType type)
 	{
-		String senderName = node.getName();
+		String senderName = resolveSenderName(node, type);
 		int ironmanType = client.getVarbitValue(VarbitID.IRONMAN);
 		ClanRankDto clanRank = resolveClanRank(senderName);
 		String friendsChatRank = resolveFriendsChatRank(senderName);
 		return new UserDto(senderName, ironmanType, clanRank, friendsChatRank);
+	}
+
+	/**
+	 * For outgoing private messages, {@link MessageNode#getName()} holds the recipient, not the
+	 * local player - the game never rewrites it to the sender for that message type. Everywhere
+	 * else, getName() is already the account that actually sent the message.
+	 */
+	private String resolveSenderName(MessageNode node, ChatMessageType type)
+	{
+		if (type == ChatMessageType.PRIVATECHATOUT)
+		{
+			Player localPlayer = client.getLocalPlayer();
+			if (localPlayer != null && localPlayer.getName() != null)
+			{
+				return localPlayer.getName();
+			}
+		}
+		return node.getName();
 	}
 
 	public ClanChatDto buildClanChat(ChatMessageType type)

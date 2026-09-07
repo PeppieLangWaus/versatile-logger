@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.regex.Pattern;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.MessageNode;
 import net.runelite.client.util.Text;
 
@@ -21,7 +22,8 @@ public class MessageFormatter
 
 	private static final Pattern JAGEX_ESCAPE_TAG = Pattern.compile("<(br|n|lt|gt|at|nbh)>");
 
-	public String buildLine(MessageNode node, Set<LineIncludeOption> include, boolean detailedTimestamp)
+	public String buildLine(MessageNode node, ChatMessageType type, String localPlayerName, Set<LineIncludeOption> include,
+		boolean detailedTimestamp)
 	{
 		boolean showIcons = include.contains(LineIncludeOption.ICONS);
 		StringBuilder line = new StringBuilder();
@@ -43,7 +45,7 @@ public class MessageFormatter
 			}
 		}
 
-		String speaker = applyIconFilter(node.getName(), showIcons);
+		String speaker = applyIconFilter(resolveSpeakerName(node, type, localPlayerName), showIcons);
 		if (!speaker.isBlank())
 		{
 			line.append(speaker).append(": ");
@@ -58,6 +60,23 @@ public class MessageFormatter
 	{
 		String formatted = node.getRuneLiteFormatMessage();
 		return formatted != null ? formatted : node.getValue();
+	}
+
+	/**
+	 * For outgoing private messages, {@link MessageNode#getName()} holds the recipient, not the
+	 * local player - the game never rewrites it to the sender for that message type, so every
+	 * line in a PM conversation ends up attributed to whoever you're talking to regardless of who
+	 * actually sent it. Substitute the local player's own name (matching the resolution
+	 * {@code ClanContextResolver.resolveSenderName} does for the remote payload) so the log
+	 * reflects who actually sent each line; fall back to a literal "You" if it's unknown.
+	 */
+	private static String resolveSpeakerName(MessageNode node, ChatMessageType type, String localPlayerName)
+	{
+		if (type == ChatMessageType.PRIVATECHATOUT)
+		{
+			return localPlayerName != null && !localPlayerName.isBlank() ? localPlayerName : "You";
+		}
+		return node.getName();
 	}
 
 	private static String applyIconFilter(String raw, boolean showIcons)
