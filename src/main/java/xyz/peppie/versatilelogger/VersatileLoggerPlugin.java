@@ -31,6 +31,7 @@ import xyz.peppie.versatilelogger.chat.ClanContextResolver;
 import xyz.peppie.versatilelogger.chat.PendingCommandMessage;
 import xyz.peppie.versatilelogger.config.VersatileLoggerConfig;
 import xyz.peppie.versatilelogger.config.VersatileLoggerConfig.FormatMode;
+import xyz.peppie.versatilelogger.config.VersatileLoggerConfig.IncludeOptionClanChatCommand;
 import xyz.peppie.versatilelogger.dto.ClanChatDto;
 import xyz.peppie.versatilelogger.dto.FriendsChatDto;
 import xyz.peppie.versatilelogger.dto.FullMessagePayload;
@@ -51,7 +52,6 @@ import xyz.peppie.versatilelogger.io.remote.RemoteLogSender;
 public class VersatileLoggerPlugin extends Plugin
 {
 	private static final long PENDING_COMMAND_TIMEOUT_MS = 8_000;
-
 	private static final int MAX_PENDING_COMMANDS = 25;
 
 	@Inject
@@ -182,6 +182,12 @@ public class VersatileLoggerPlugin extends Plugin
 			return;
 		}
 		ChatCategory category = maybeCategory.get();
+
+		if (category == ChatCategory.CLAN_CHAT && chatMessage.getType() == ChatMessageType.CLAN_MESSAGE
+			&& !config.clanChatInclude().contains(IncludeOptionClanChatCommand.LEVEL_UP_AND_DROP_BROADCASTS))
+		{
+			return;
+		}
 
 		MessageNode node = chatMessage.getMessageNode();
 		if (node == null)
