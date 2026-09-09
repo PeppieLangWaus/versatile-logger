@@ -49,7 +49,7 @@ public class ClanContextResolver
 
 	public ClanChatDto buildClanChat(ChatMessageType type)
 	{
-		if (type == ChatMessageType.CLAN_CHAT)
+		if (type == ChatMessageType.CLAN_CHAT || type == ChatMessageType.CLAN_MESSAGE)
 		{
 			ClanChannel channel = client.getClanChannel();
 			return channel == null ? null : new ClanChatDto(channel.getName());

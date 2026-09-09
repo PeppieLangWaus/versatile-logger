@@ -16,6 +16,10 @@ public class ChatMessageRouter
 				return patternMatch;
 			}
 		}
+		else if (type == ChatMessageType.CLAN_MESSAGE && ClanBroadcastPatterns.isLevelUpOrDropBroadcast(message))
+		{
+			return Optional.of(ChatCategory.CLAN_CHAT);
+		}
 
 		for (ChatCategory category : ChatCategory.values())
 		{

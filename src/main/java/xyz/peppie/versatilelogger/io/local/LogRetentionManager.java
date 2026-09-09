@@ -10,13 +10,6 @@ import java.time.format.DateTimeParseException;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Deletes local log files/folders older than the configured retention window. Every candidate
- * path is verified to live inside {@link LocalLogWriter#PLUGIN_ROOT} before deletion, so a
- * malformed or unexpected filename can never cause a delete outside this plugin's own directory.
- * Intended to be run off the client thread (the plugin dispatches it onto the same executor used
- * for local file writes).
- */
 @Slf4j
 @Singleton
 public class LogRetentionManager

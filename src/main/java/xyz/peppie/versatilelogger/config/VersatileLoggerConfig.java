@@ -50,16 +50,13 @@ public interface VersatileLoggerConfig extends Config
 		CLAN_CHAT_NAME
 	}
 
-	/**
-	 * Like {@link IncludeOptionClanChat}, but for clan chat specifically, which (unlike guest
-	 * clan chat) is a category this plugin watches typed chat commands in.
-	 */
 	enum IncludeOptionClanChatCommand
 	{
 		TIMESTAMP,
 		ICONS,
 		CLAN_CHAT_NAME,
-		COMMAND_OUTPUT
+		COMMAND_OUTPUT,
+		LEVEL_UP_AND_DROP_BROADCASTS
 	}
 
 	enum IncludeOptionGroupChat
@@ -450,7 +447,7 @@ public interface VersatileLoggerConfig extends Config
 	@ConfigItem(
 		keyName = "clanChatInclude",
 		name = "Include",
-		description = "Which parts of each clan chat message to include when logging/sending. Command output additionally sends/logs a follow-up once a typed chat command (e.g. !log) resolves.",
+		description = "Which parts of each clan chat message to include when logging/sending. Command output additionally sends/logs a follow-up once a typed chat command (e.g. !log) resolves. Level up & drop broadcasts additionally logs clan broadcast system messages - a member reaching a level milestone or receiving a drop, as configured under in-game Clan Settings notices - as clan chat. These are not the same as your own such messages (see the Level up / High value drop categories for those).",
 		section = CLAN_CHAT_SECTION,
 		position = 47
 	)
